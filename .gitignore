@@ -32,6 +32,13 @@ ENV/
 env.bak/
 venv.bak/
 
+# Testing, coverage & caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -42,7 +49,7 @@ venv.bak/
 checkpoints/
 models_saved/
 
-# Experiment results and logs
+# Experiment results, runs & logs
 runs/
 wandb/
 results/
@@ -50,7 +57,7 @@ logs/
 *.log
 *.tfevents.*
 
-# Editors & IDEs
+# Editors, OS & IDEs
 .idea/
 .vscode/
 *.swp
@@ -58,3 +65,17 @@ logs/
 *~
 .DS_Store
 Thumbs.db
+
+# Project assignment notes & AI assistant planning artifacts
+Project Topic
+implementation_plan*.md
+walkthrough*.md
+
+# Research papers (PDFs)
+papers/
+*.pdf
+
+# Temporary files & scratch directories
+scratch/
+tmp/
+temp/

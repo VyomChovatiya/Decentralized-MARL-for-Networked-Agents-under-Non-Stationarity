@@ -2,8 +2,8 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Benchmark: COGNAC](https://img.shields.io/badge/Benchmark-COGNAC%20(NeurIPS%202025)-green.svg)](papers/COGNAC_NeurIPS_2025.pdf)
-[![Algorithm: BayesG](https://img.shields.io/badge/Algorithm-BayesG%20(NeurIPS%202025)-purple.svg)](papers/BayesG_NeurIPS_2025.pdf)
+[![Benchmark: COGNAC](https://img.shields.io/badge/Benchmark-COGNAC%20(NeurIPS%202025)-green.svg)](https://github.com/yojul/cognac-benchmark-example)
+[![Algorithm: BayesG](https://img.shields.io/badge/Algorithm-BayesG%20(NeurIPS%202025)-purple.svg)](https://arxiv.org/abs/2509.16606)
 
 > **2-Month Undergraduate Research Project** studying how decentralized reinforcement learning agents situated on networked topologies coordinate when neighboring agents update or switch policies concurrently during training.
 
