@@ -1,11 +1,10 @@
 # Decentralized MARL for Networked Agents under Non-Stationarity
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Benchmark: COGNAC](https://img.shields.io/badge/Benchmark-COGNAC%20(NeurIPS%202025)-green.svg)](https://github.com/yojul/cognac-benchmark-example)
 [![Algorithm: BayesG](https://img.shields.io/badge/Algorithm-BayesG%20(NeurIPS%202025)-purple.svg)](https://arxiv.org/abs/2509.16606)
 
-> **2-Month Undergraduate Research Project** studying how decentralized reinforcement learning agents situated on networked topologies coordinate when neighboring agents update or switch policies concurrently during training.
+> **RL Research Project** studying how decentralized reinforcement learning agents situated on networked topologies coordinate when neighboring agents update or switch policies concurrently during training.
 
 ---
 
@@ -35,7 +34,7 @@ To ensure zero merge conflicts and seamless parallel progress, responsibilities 
 
 | Team Member | Role & Track | Primary Ownership | Deliverables |
 |---|---|---|---|
-| **Member 1 (Vyom - Lead)** | **Environments & Topologies** | `src/environments/` | NetworkX graph generators (Ring, Grid, ER, BA), COGNAC PettingZoo wrapper, Non-stationarity policy shock orchestrator ($t_c: \pi_A \to \pi_B$). |
+| **Member 1 (Lead)** | **Environments & Topologies** | `src/environments/` | NetworkX graph generators (Ring, Grid, ER, BA), COGNAC PettingZoo wrapper, Non-stationarity policy shock orchestrator ($t_c: \pi_A \to \pi_B$). |
 | **Member 2** | **Algorithms & Architectures** | `src/models/`, `src/algorithms/` | Decentralized Actor-Critic, $k$-hop GNN message passing layers, BayesG latent mask variational inference (ELBO objective). |
 | **Member 3** | **Experiments & Evaluation** | `src/experiments/`, `src/evaluation/`, `configs/` | YAML config engine, CLI training runner, 6-metric evaluation suite (Instability Index, Adaptation Latency, etc.), automated plotting pipeline. |
 
