@@ -1,0 +1,27 @@
+# Default Experiment Configuration
+seed: 42
+
+env:
+  name: "consensus"
+  topology: "ring"        # ring, grid, erdos_renyi, scale_free
+  num_agents: 10
+  max_steps: 40
+
+algorithm:
+  name: "ippo"            # ippo, networked_ppo, bayesg
+  hidden_dim: 64
+  k_hops: 1
+
+train:
+  total_episodes: 150
+  lr: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_ratio: 0.2
+  epochs: 4
+
+shock:
+  step: 75                # Episode when shock triggers
+  fraction: 0.3           # 30% of agents shocked
+  selection_mode: "random"# random, hubs, boundary
+  behavior: "adversarial" # random, adversarial, stubborn_0, stubborn_1

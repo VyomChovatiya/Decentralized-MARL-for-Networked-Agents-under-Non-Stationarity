@@ -1,0 +1,24 @@
+# Ultra-fast smoke test for verifying setup
+seed: 42
+
+env:
+  name: "consensus"
+  topology: "ring"
+  num_agents: 5
+  max_steps: 20
+
+algorithm:
+  name: "ippo"
+  hidden_dim: 32
+
+train:
+  total_episodes: 25
+  lr: 0.001
+  gamma: 0.95
+  epochs: 2
+
+shock:
+  step: 12
+  fraction: 0.4
+  selection_mode: "random"
+  behavior: "adversarial"

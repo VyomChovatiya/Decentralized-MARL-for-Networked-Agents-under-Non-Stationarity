@@ -1,0 +1,16 @@
+# Scaling Sweep Matrix
+experiment_name: "topology_and_scale_sweep"
+
+dimensions:
+  num_agents: [5, 10, 25, 50, 100]
+  topologies: ["ring", "grid", "erdos_renyi", "scale_free"]
+  communication_radii: [1, 2, 3]
+  algorithms: ["ippo", "networked_ppo", "bayesg"]
+  shock_fractions: [0.2, 0.5, 0.8]
+
+shared_hyperparameters:
+  lr: 0.0003
+  gamma: 0.99
+  clip_ratio: 0.2
+  total_episodes: 300
+  shock_step: 150
