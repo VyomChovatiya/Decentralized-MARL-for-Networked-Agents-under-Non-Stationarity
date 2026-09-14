@@ -4,18 +4,19 @@
 
 - **Duration**: 8 Weeks (~2 Months)
 - **Team**: 3 Undergraduate Researchers
-- **Objective**: Deliver a complete empirical research study on **Decentralized MARL on Networked Topologies under Non-Stationarity**, evaluating the resilience of **IPPO**, **Static $k$-hop GNN**, and **BayesG** against policy-switching shocks across multiple network structures ($N \in \{5, 10, 25, 50, 100\}$).
+- **Objective**: Deliver an original empirical research study on **Decentralized MARL on Networked Topologies under Non-Stationarity**, evaluating the resilience of **IPPO**, **Static $k$-hop GNN**, and **BayesG** against policy-switching shocks across multiple network structures ($N \in \{5, 10, 25, 50, 100\}$).
+- **Core Novelty**: Investigating how graph spectral properties (algebraic connectivity, degree heterogeneity) govern vulnerability to non-stationarity, and evaluating BayesG's latent graph inference as an automated topological "quarantine" mechanism against perturbed agents.
 
 ---
 
-## 🗓️ Weekly Schedule & Role Matrix
+## 🗓️ Milestones & Presentation Timeline
 
 ```
-Week 1-2: Foundations, Environment Setup & 5-Node Baseline
-Week 3-4: Graph Topologies & k-Hop Networked Communication
-Week 5-6: Policy-Switch Non-Stationarity Shock & BayesG Integration
-Week 7:   Large-Scale Systematic Sweeps (N = 5 to 100) & Ablations
-Week 8:   Metrics Analysis, Visualizations & Final Research Report
+Weeks 1–3: Foundations, Configurable Topologies & Baseline Benchmarks
+Week 4:    MID-TERM PRESENTATION (Problem formulation, theory, baselines, initial results)
+Weeks 5–6: Non-Stationarity Shock Protocol & BayesG Ego-Graph Integration
+Week 7:    Large-Scale Sweeps (N = 5 to 100), Ablation Studies & Failure Mode Analysis
+Week 8:    END-SEMESTER PRESENTATION & FINAL REPORT (Full paper, comparative analysis, demo)
 ```
 
 ---
