@@ -52,7 +52,7 @@ models_saved/
 # Experiment results, runs & logs
 runs/
 wandb/
-results/
+# results/ (included for benchmark figures & metrics)
 logs/
 *.log
 *.tfevents.*
@@ -74,6 +74,7 @@ walkthrough*.md
 # Research papers (PDFs)
 papers/
 *.pdf
+!Project_Comprehensive_Guide.pdf
 
 # Temporary files & scratch directories
 scratch/

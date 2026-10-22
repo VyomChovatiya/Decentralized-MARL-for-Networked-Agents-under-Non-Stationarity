@@ -1,11 +1,15 @@
 """
-Tests for Neural Architectures (Track 2)
+Tests for Neural Architectures and MARL Trainers (Track 2)
 """
+import numpy as np
 import torch
 from src.models.actors import DecentralizedMLPActor
 from src.models.critics import DecentralizedMLPCritic
 from src.models.gnn_comm import GNNCommunicationLayer
 from src.models.bayes_ego import BayesGEgoInference
+from src.algorithms.ippo import IPPOTrainer
+from src.algorithms.networked_ppo import NetworkedPPOTrainer
+from src.algorithms.bayesg import BayesGTrainer
 
 
 def test_actor_critic_shapes():
@@ -49,3 +53,26 @@ def test_bayes_ego_inference():
     mask, kl_loss = bayes(features, adj)
     assert mask.shape == (num_agents, num_agents)
     assert kl_loss.item() >= 0.0
+
+
+def test_all_three_trainers_update():
+    num_agents = 5
+    obs_dim = 3
+    act_dim = 2
+    adj = torch.ones(num_agents, num_agents)
+
+    for trainer in [
+        IPPOTrainer(obs_dim=obs_dim, act_dim=act_dim, epochs=2),
+        NetworkedPPOTrainer(obs_dim=obs_dim, act_dim=act_dim, k_hops=1, gnn_dim=16, epochs=2),
+        BayesGTrainer(obs_dim=obs_dim, act_dim=act_dim, k_hops=1, gnn_dim=16, epochs=2),
+    ]:
+        for t in range(4):
+            obs = torch.randn(num_agents, obs_dim)
+            out = trainer.select_action(obs, adj)
+            acts, logp, vals = out[0], out[1], out[2]
+            rews = np.ones(num_agents, dtype=np.float32)
+            trainer.store_transition(obs, acts, logp, rews, t == 3, vals, adj=adj)
+
+        stats = trainer.update(adj) if hasattr(trainer, "k_hops") else trainer.update()
+        assert "actor_loss" in stats
+        assert "critic_loss" in stats

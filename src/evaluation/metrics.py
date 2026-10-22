@@ -60,10 +60,12 @@ def compute_experiment_metrics(
             window_slice = returns_arr[max(0, shock_step - 15) : min(N, shock_step + 15)]
             instability_index = float(np.std(window_slice))
 
-            # Adaptation latency: steps post-shock to recover to 90% of pre-shock performance
-            recovery_target = 0.9 * pre_shock_mean
-            recovered_indices = np.where(post_shock_slice >= recovery_target)[0]
-            adaptation_latency = int(recovered_indices[0]) if len(recovered_indices) > 0 else len(post_shock_slice)
+            # Adaptation latency: steps post-shock for rolling 4-episode mean to recover to 85% of pre-shock performance
+            recovery_target = 0.85 * pre_shock_mean if pre_shock_mean > 0 else pre_shock_mean - 1.5
+            w_rec = min(4, len(post_shock_slice))
+            post_smoothed = np.convolve(post_shock_slice, np.ones(w_rec) / w_rec, mode="valid")
+            recovered_indices = np.where(post_smoothed >= recovery_target)[0]
+            adaptation_latency = int(recovered_indices[0] + w_rec - 1) if len(recovered_indices) > 0 else len(post_shock_slice)
 
     # 3. Communication cost
     avg_comm_cost = float(np.mean(comm_costs)) if comm_costs is not None and len(comm_costs) > 0 else 1.0

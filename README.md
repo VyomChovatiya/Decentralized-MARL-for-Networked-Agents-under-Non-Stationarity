@@ -149,3 +149,83 @@ python src/evaluation/plot_results.py --logdir runs/
 - **DAPM**: Chenhang Xu et al. *Decentralized Multi-Agent Cooperation via Adaptive Partner Modeling*. Complex & Intelligent Systems, 2024.
 - **Policy Consensus**: Yifan Hu et al. *Distributed Entropy-Regularized Multi-Agent Reinforcement Learning with Policy Consensus*. Automatica, 2024.
 - **CIAO**: *Open Ad Hoc Teamwork with Cooperative Game Theory*. ICML 2024.
+
+---
+
+## 🔬 Experimental Suite & Empirical Results (Priorities 1–4)
+
+### 1. Unified Training & Hardware Support (Priority 1)
+All three decentralized MARL algorithms are fully implemented with multi-agent Generalized Advantage Estimation (GAE) and unified under [`src/experiments/run_experiment.py`](src/experiments/run_experiment.py):
+- **`IPPOTrainer` (`ippo`)**: 0-hop decentralized Actor-Critic baseline without inter-agent communication.
+- **`NetworkedPPOTrainer` (`networked_ppo`)**: Static $k$-hop GNN message passing with local skip-projections and joint Actor-Critic-GNN optimization.
+- **`BayesGTrainer` (`bayesg`)**: Dynamic Bayesian Ego-Graph variational inference (`BayesGEgoInference`) using Gumbel-Softmax edge masks $Z_{ij} \in [0, 1]$, pairwise relational difference features $[h_i, h_j, |h_i - h_j|]$, and joint PPO + ELBO KL optimization.
+- **Hardware Acceleration**: Auto-detects `cuda`, Intel Arc `xpu`, or `cpu`.
+
+#### Running the Full Priority 1–4 Benchmark Suite
+```bash
+# Run all 19 unit tests (Environments, Topologies, Models, and Trainer Updates)
+pytest tests/
+
+# Generate 4-topology visual comparison (Ring, Grid, Erdos-Renyi, Scale-Free)
+python src/evaluation/plot_topologies.py
+
+# Run the complete Priority 2-4 experimental suite & generate all figures
+python src/experiments/run_priority_suite.py
+```
+
+---
+
+### 2. Normal Operation Baseline — No Shocks (Priority 2)
+Evaluated on a 10-node Ring topology (`N=10, k=2, 90 episodes, shock_step=None`) where each agent receives a noisy local sensor measurement of the target consensus state:
+
+| Algorithm | Mean Return ($\uparrow$) | Max Smoothed Return ($\uparrow$) | Convergence Episode ($\downarrow$) | Avg Comm Cost |
+| :--- | :---: | :---: | :---: | :---: |
+| **IPPO (0-Hop, No Comm)** | `-5.61` | `9.93` | `41` | `0.00` |
+| **Networked-PPO ($k$-Hop GNN)** | `+1.10` | `13.14` | `65` | `1.00` |
+| **BayesG (Dynamic Ego-Graph)** | **`+5.57`** | **`14.78`** | **`36`** | `0.90` |
+
+* **Finding**: Multi-hop communication (`Networked-PPO` and `BayesG`) substantially outperforms isolated learning (`IPPO`) by pooling neighborhood observations to cancel local sensor noise.
+
+---
+
+### 3. Non-Stationarity Shock Benchmarks (Priority 3)
+
+#### 3A. Mid-Training Random Policy Shock (`Ring, N=10, t_c=50, fraction=0.3`)
+At episode $t_c = 50$, 30% of agents switch to an adversarial policy and broadcast shifted/corrupted state features:
+
+| Algorithm | Mean Return ($\uparrow$) | Instability Index ($\downarrow$) | Adaptation Latency ($\downarrow$) | Avg Comm Cost ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: |
+| **IPPO (0-Hop)** | `-3.52` | `19.42` | `3 eps` | `0.00` |
+| **Networked-PPO (Static GNN)** | `-4.83` | `25.69` | `22 eps` | `1.00` |
+| **BayesG (Dynamic Mask)** | **`+5.08`** | **`8.89`** | **`3 eps`** | **`0.75`** |
+
+* **Finding**: Static `Networked-PPO` suffers severe instability (`25.69`) and slow recovery (`22 episodes`) because corrupted neighbor features propagate across the graph. `BayesG` reduces instability by **~3x (`8.89`)** and recovers in **3 episodes** while cutting active communication overhead to `0.75`.
+
+#### 3B. Scale-Free (Barabási-Albert) Network: Hub Shock vs. Periphery Shock (`N=12, t_c=50`)
+Compares shocking high-degree **hub nodes** (`[0, 1, 4]`) versus low-degree **boundary/periphery nodes** (`[2, 7, 9]`):
+
+| Scenario | Shocked Nodes | Mean Return ($\uparrow$) | Instability Index ($\downarrow$) | Shock Drop ($\downarrow$) | Adaptation Latency ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **NetPPO (Hub Shock)** | `[0, 1, 4]` | `-11.74` | `30.74` | `60.71` | `20 eps` |
+| **NetPPO (Boundary Shock)** | `[2, 7, 9]` | `-6.75` | `23.44` | `61.98` | `4 eps` |
+| **BayesG (Hub Shock)** | `[0, 1, 4]` | **`+0.33`** | **`15.62`** | **`25.82`** | **`3 eps`** |
+| **BayesG (Boundary Shock)** | `[2, 7, 9]` | **`+4.32`** | **`11.99`** | **`17.29`** | **`3 eps`** |
+
+* **Finding**: Scale-free networks are disproportionately vulnerable to hub shocks under static GNN message passing (`20 episodes` recovery latency vs. `4 episodes` for boundary shocks). `BayesG` mitigates hub vulnerability by isolating perturbed hubs, cutting instability and shock drop by **>50%**.
+
+---
+
+### 4. Dynamic Ego-Graph Edge Pruning Visualization (Priority 4)
+Quantitative comparison of inferred communication edge probabilities $\bar{Z}_{ij}$ in `BayesG` before ($t < t_c$) and after ($t > t_c$) the Scale-Free Hub Shock:
+
+- **Edges connected to Shocked Hubs `[0, 1, 4]`**:
+  - Pre-Shock ($t < t_c$): **`0.904`** $\longrightarrow$ Post-Shock ($t > t_c$): **`0.267`** (**>70% edge weight suppression / topological quarantine**)
+- **Edges between Healthy Operational Nodes**:
+  - Pre-Shock ($t < t_c$): **`0.910`** $\longrightarrow$ Post-Shock ($t > t_c$): **`0.901`** (**healthy communication links preserved at 90%**)
+
+Generated figures are saved to:
+- `results/topologies_overview.png`
+- `results/priority2_no_shock/no_shock_comparison.png`
+- `results/priority3_random_shock/shock_comparison.png`
+- `results/priority3_hub_vs_periphery/hub_vs_periphery.png`
+- `results/priority4_edge_pruning/bayesg_edge_pruning.png`
